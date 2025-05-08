@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import OpenAI from 'openai';
 import { Feedback } from '@/types';
@@ -96,4 +98,6 @@ export const useFeedback = () => {
   };
 
   return { feedback, isLoading, error, getFeedback };
-}; 
+};
+
+export default useFeedback; 
