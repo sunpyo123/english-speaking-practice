@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { todaySentences } from '@/constants/sentences';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import useFeedback from '@/hooks/useFeedback';
-import { Sentence, Feedback } from '@/types';
+import { Sentence } from '@/types';
 
 export default function Home() {
   const [currentSentence, setCurrentSentence] = useState<Sentence>(todaySentences[0]);
