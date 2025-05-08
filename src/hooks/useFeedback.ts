@@ -24,6 +24,10 @@ export const useFeedback = () => {
         model: 'whisper-1',
       });
 
+      if (!transcription.text) {
+        throw new Error('음성을 텍스트로 변환하는데 실패했습니다.');
+      }
+
       // 2. 피드백 생성
       const completion = await openai.chat.completions.create({
         model: 'gpt-4',
@@ -63,11 +67,29 @@ export const useFeedback = () => {
         response_format: { type: "json_object" }
       });
 
-      const feedbackData = JSON.parse(completion.choices[0].message.content);
-      setFeedback(feedbackData);
+      const content = completion.choices[0]?.message?.content;
+      
+      if (!content) {
+        throw new Error('피드백을 생성하는데 실패했습니다.');
+      }
+
+      try {
+        const feedbackData = JSON.parse(content) as Feedback;
+        
+        // 필수 필드가 모두 있는지 확인
+        if (!feedbackData.pronunciation || !feedbackData.fluency || 
+            !feedbackData.overall || !feedbackData.suggestions) {
+          throw new Error('피드백 데이터가 올바른 형식이 아닙니다.');
+        }
+
+        setFeedback(feedbackData);
+      } catch (parseError) {
+        console.error('Error parsing feedback:', parseError);
+        throw new Error('피드백 데이터를 처리하는데 실패했습니다.');
+      }
     } catch (err) {
       console.error('Error getting feedback:', err);
-      setError('피드백을 받는 중 오류가 발생했습니다. 다시 시도해주세요.');
+      setError(err instanceof Error ? err.message : '피드백을 받는 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }

@@ -9,7 +9,7 @@ import { Sentence } from '@/types';
 export default function Home() {
   const [currentSentence, setCurrentSentence] = useState<Sentence>(todaySentences[0]);
   const { recordingState, startRecording, stopRecording } = useSpeechRecognition();
-  const { feedback, isLoading, error, getFeedback } = useFeedback();
+  const { feedback, isLoading, error, getFeedback, setError } = useFeedback();
 
   const handleNextSentence = () => {
     const currentIndex = todaySentences.findIndex(s => s.id === currentSentence.id);
@@ -76,7 +76,13 @@ export default function Home() {
                   alert('먼저 음성을 녹음해주세요.');
                   return;
                 }
-                getFeedback(currentSentence.text, recordingState.audioBlob);
+                getFeedback(currentSentence.text, recordingState.audioBlob)
+                  .then(data => {
+                    // 여기에 성공 처리 로직을 추가할 수 있습니다.
+                  })
+                  .catch(err => {
+                    setError(err instanceof Error ? err.message : '피드백을 받는 중 오류가 발생했습니다. 다시 시도해주세요.');
+                  });
               }}
               disabled={isLoading || !recordingState.audioBlob}
               className="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors disabled:bg-gray-400"
