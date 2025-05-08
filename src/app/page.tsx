@@ -8,8 +8,8 @@ import { Sentence } from '@/types';
 
 export default function Home() {
   const [currentSentence, setCurrentSentence] = useState<Sentence>(todaySentences[0]);
-  const { recordingState, startRecording, stopRecording } = useSpeechRecognition();
-  const { feedback, isLoading, error, getFeedback } = useFeedback();
+  const { recordingState, error: recordingError, startRecording, stopRecording } = useSpeechRecognition();
+  const { feedback, isLoading, error: feedbackError, getFeedback } = useFeedback();
 
   const handleNextSentence = () => {
     const currentIndex = todaySentences.findIndex(s => s.id === currentSentence.id);
@@ -69,6 +69,12 @@ export default function Home() {
               )}
             </div>
 
+            {recordingError && (
+              <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-md">
+                {recordingError}
+              </div>
+            )}
+
             {recordingState.audioUrl && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
@@ -115,9 +121,9 @@ export default function Home() {
               </div>
             )}
 
-            {error && (
+            {feedbackError && (
               <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-md">
-                {error}
+                {feedbackError}
               </div>
             )}
 
